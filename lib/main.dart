@@ -34,10 +34,25 @@ class _MyHomePageState extends State<MyHomePage> {
   static const platform = const MethodChannel('samples.flutter.dev/oneLogin');
   String _response = 'nothing';
 
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
   void _clearText() {
     setState(() {
       _response = 'nothing';
     });
+  }
+
+  Future<void> _init() async {
+    try {
+      final int result = await platform.invokeMethod('initOneLogin');
+      print(result);
+    } on PlatformException catch (e) {
+      print('ERR ${e.message}');
+    }
   }
 
   Future<void> _getSignIn() async {

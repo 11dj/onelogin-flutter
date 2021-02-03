@@ -21,18 +21,22 @@ import OLOidc
   ) -> Bool {
     
     let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        let oneLoginChannel = FlutterMethodChannel(name: "samples.flutter.dev/onelogin",
-                                                  binaryMessenger: controller.binaryMessenger)
-
+//        let oneLoginChannel = FlutterMethodChannel(name: "samples.flutter.dev/onelogin",
+//                                                  binaryMessenger: controller.binaryMessenger)
+    
+    let oneLoginChannel = FlutterMethodChannel.init(name: "samples.flutter.dev/onelogin", binaryMessenger: controller as! FlutterBinaryMessenger)
     
     oneLoginChannel.setMethodCallHandler({
       [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-      // Note: this method is invoked on the UI thread.
-      guard call.method == "getSignIn" else {
-        result(FlutterMethodNotImplemented)
-        return
-      }
-      self?.signIn(result: result)
+        if call.method == "initOneLogin" {
+//            self?.signIn(result: result)
+            let olOidc = OLOidc(configuration: myConfiguration, useSecureStorage: false)
+        } else if call.method == "getSignIn" {
+            self?.signIn(result: result)
+          } else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
     })
 
     GeneratedPluginRegistrant.register(with: self)
