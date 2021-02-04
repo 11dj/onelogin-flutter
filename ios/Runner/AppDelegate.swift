@@ -13,7 +13,22 @@ import OLOidc
         }
         return false
     }
+        
+}
     
+    override func viewDidLoad() {
+      super.viewDidLoad()
+
+      let olOidcConfig = try? OLOidcConfig(dict: [
+        "issuer": "https://openid-connect.onelogin.com/oidc",
+        "clientId": "ba08dd00-484a-0139-b563-06351d701be3184317",
+        "redirectUri": "https://com.oneloginAuth.oidc://callback",
+        "scopes": "openid profile"
+      ])
+
+      olOidc = try? OLOidc(configuration: olOidcConfig)
+      AppDelegate.shared.olOidc = olOidc
+
     
   override func application(
     _ application: UIApplication,
@@ -27,12 +42,12 @@ import OLOidc
     let oneLoginChannel = FlutterMethodChannel.init(name: "samples.flutter.dev/onelogin", binaryMessenger: controller as! FlutterBinaryMessenger)
     
     oneLoginChannel.setMethodCallHandler({
-      [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+      (call: FlutterMethodCall, result: FlutterResult) -> Void in
         if call.method == "initOneLogin" {
 //            self?.signIn(result: result)
             let olOidc = OLOidc(configuration: myConfiguration, useSecureStorage: false)
         } else if call.method == "getSignIn" {
-            self?.signIn(result: result)
+            self?.signIn(controller: controller, result: result)
           } else {
           result(FlutterMethodNotImplemented)
           return
@@ -43,8 +58,8 @@ import OLOidc
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
     
-    func signIn(result: FlutterResult) {
-        olOidc?.signIn(presenter: self) { error
+    func signIn(controller: UIViewController, result: FlutterResult) {
+        olOidc?.signIn(presenter: controller) { error
                 in
                 if let error = error {
                         result(FlutterError(code: "Error",
